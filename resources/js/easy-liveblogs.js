@@ -260,7 +260,8 @@ moment.locale(elb.locale);
         },
 
         renderAuthor: function (post) {
-            return `<p class="elb-liveblog-post-author">By ${this.escapeHtml(post.author)}</p>`;
+            const author = post.author ? this.escapeHtml(post.author) : '';
+            return `<p class="elb-liveblog-post-author">By ${author}</p>`;
         },
 
         renderSharing: function (post) {
@@ -268,16 +269,21 @@ moment.locale(elb.locale);
             const xUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(post.title)} ${encodeURIComponent(post.permalink)}`;
             const mailUrl = `mailto:?&subject=${encodeURIComponent(post.title)}&body=${encodeURIComponent(post.permalink)}`;
 
+            const icons = this.settings.socialIcons || {};
+            const fbIcon = icons.facebook || '';
+            const xIcon = icons.x || '';
+            const mailIcon = icons.mail || '';
+
             return `
 				<div class="elb-liveblog-post-sharing">
 					<a href="${fbUrl}" target="_blank" title="Share via Facebook">
-						${this.settings.socialIcons.facebook}
+						${fbIcon}
 					</a>
 					<a href="${xUrl}" target="_blank" title="Share via X/Twitter">
-						${this.settings.socialIcons.x}
+						${xIcon}
 					</a>
 					<a href="${mailUrl}" target="_blank" title="Share via email">
-						${this.settings.socialIcons.mail}
+						${mailIcon}
 					</a>
 				</div>
 			`;
