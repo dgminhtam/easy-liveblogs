@@ -181,7 +181,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 					'enable_fixed_height' => 'yes',
 				),
 				'selectors'       => array(
-					'{{WRAPPER}} ul.elb-liveblog-list' => 'height: {{SIZE}}{{UNIT}}; overflow-y: auto; overflow-x: hidden;',
+					'{{WRAPPER}} .elb-liveblog-list-container' => 'height: {{SIZE}}{{UNIT}}; overflow-y: auto; overflow-x: hidden; padding-left: 10px;',
 				),
 			)
 		);
@@ -550,17 +550,6 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 			)
 		);
 
-		$this->add_control(
-			'timeline_dot_border_color',
-			array(
-				'label'     => esc_html__( 'Border Color', 'easy-liveblogs' ),
-				'type'      => \Elementor\Controls_Manager::COLOR,
-				'selectors' => array(
-					'{{WRAPPER}} .elb-liveblog-post:not(:first-child)::before' => 'border-color: {{VALUE}} !important;',
-				),
-			)
-		);
-
 		$this->add_responsive_control(
 			'timeline_dot_size',
 			array(
@@ -595,17 +584,6 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 				'type'      => \Elementor\Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .elb-liveblog-post:first-child::before' => 'background-color: {{VALUE}} !important;',
-				),
-			)
-		);
-
-		$this->add_control(
-			'timeline_first_dot_border_color',
-			array(
-				'label'     => esc_html__( 'Border Color', 'easy-liveblogs' ),
-				'type'      => \Elementor\Controls_Manager::COLOR,
-				'selectors' => array(
-					'{{WRAPPER}} .elb-liveblog-post:first-child::before' => 'border-color: {{VALUE}} !important;',
 				),
 			)
 		);
@@ -805,7 +783,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 				'label'     => esc_html__( 'Text Color', 'easy-liveblogs' ),
 				'type'      => \Elementor\Controls_Manager::COLOR,
 				'selectors' => array(
-					'{{WRAPPER}} .elb-liveblog-post-heading' => 'color: {{VALUE}} !important;',
+					'{{WRAPPER}} .elb-liveblog-post h2.elb-liveblog-post-heading' => 'color: {{VALUE}} !important;',
 				),
 			)
 		);
@@ -815,7 +793,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 			array(
 				'name'     => 'title_typography',
 				'label'    => esc_html__( 'Typography', 'easy-liveblogs' ),
-				'selector' => '{{WRAPPER}} .elb-liveblog-post-heading',
+				'selector' => '{{WRAPPER}} .elb-liveblog-post h2.elb-liveblog-post-heading',
 			)
 		);
 
@@ -832,7 +810,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 					),
 				),
 				'selectors'  => array(
-					'{{WRAPPER}} .elb-liveblog-post-heading' => 'margin-bottom: {{SIZE}}{{UNIT}} !important;',
+					'{{WRAPPER}} .elb-liveblog-post h2.elb-liveblog-post-heading' => 'margin-bottom: {{SIZE}}{{UNIT}} !important;',
 				),
 			)
 		);
@@ -943,7 +921,9 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 
             <div class="elb-no-liveblog-entries-message" style="display: none;"><?php echo esc_html__( 'No liveblog updates yet.', 'easy-liveblogs' ); ?></div>
 
-            <ul class="elb-liveblog-list"></ul>
+            <div class="elb-liveblog-list-container">
+                <ul class="elb-liveblog-list"></ul>
+            </div>
 
             <div class="elb-loader">
                 <svg width="45" height="45" viewBox="0 0 45 45" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">

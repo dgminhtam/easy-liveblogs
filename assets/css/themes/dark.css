@@ -31,23 +31,19 @@
 	border: 3px solid #eee;
 }
 
-.elb-liveblog-post-heading {
-	padding-top: .6em !important;
-	font-size: 22px !important;
-	margin-top: 0 !important;
-}
+
 
 .elb-liveblog-post-sharing {
 	margin-top: 10px;
 }
 
 .elb-liveblog-post-sharing a {
-	color: rgba( 0, 0, 0, .5 );
+	color: rgba(0, 0, 0, .5);
 	display: inline-block;
 }
 
 .elb-liveblog-post-sharing a:hover {
-	color: rgba( 0, 0, 0, 1 );
+	color: rgba(0, 0, 0, 1);
 }
 
 .elb-liveblog-post-content {
@@ -69,7 +65,7 @@
 	font-size: .9rem;
 	margin-top: 15px;
 	opacity: .9;
-    display: none;
+	display: none;
 }
 
 .elb-liveblog-actions a {
@@ -101,11 +97,11 @@
 }
 
 .elb-liveblog-post-sharing a {
-	color: rgba( 255, 255, 255, .6 );
+	color: rgba(255, 255, 255, .6);
 }
 
 .elb-liveblog-post-sharing a:hover {
-	color: rgba( 255, 255, 255, 1 );
+	color: rgba(255, 255, 255, 1);
 }
 
 .elb-button {

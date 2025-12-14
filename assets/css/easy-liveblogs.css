@@ -1,8 +1,5 @@
-/* =========================================
-   1. CẤU TRÚC CHUNG & FONT CHỮ
-   ========================================= */
 .elb-liveblog {
-	font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	font-family: inherit;
 	color: #444;
 }
 
@@ -13,54 +10,31 @@ ul.elb-liveblog-list {
 	position: relative;
 }
 
-/* =========================================
-   2. KHỐI TIN (CARD)
-   ========================================= */
 .elb-liveblog .elb-liveblog-post {
 	position: relative;
 	background-color: #ffffff;
 	border-radius: 8px;
 	padding: 20px;
 	margin-bottom: 25px;
-	/* Khoảng cách giữa các tin */
 	box-shadow: 0 2px 5px rgba(29, 109, 116, 0.08);
-	/* Bóng đổ màu Teal nhạt */
 	border: 1px solid #edf5f5;
 	transition: transform 0.2s ease, box-shadow 0.2s ease;
 	z-index: 1;
 }
 
-/* =========================================
-   4. CHẤM TRÒN (TIMELINE DOT)
-   ========================================= */
-/* Dùng ::before (gốc của plugin) để vẽ chấm tròn */
 .elb-liveblog .elb-liveblog-post::before {
-	content: '' !important;
-	/* Ghi đè style mặc định */
+	content: '';
 	display: block;
 	position: absolute;
-
-	/* Căn tâm với đường kẻ (-29px) */
 	left: -27px;
 	top: -1px;
-	width: 12px !important;
-	height: 12px !important;
+	width: 12px;
+	height: 12px;
 	border-radius: 50%;
-
-	/* Style màu sắc */
 	background-color: #fff;
-	border: 3px solid #1D6D74;
-	/* Màu chủ đạo Teal */
-	box-shadow: 0 0 0 4px #f0f4f5;
-	/* Viền đệm để cắt đường kẻ */
 	z-index: 2;
 }
 
-/* =========================================
-   5. NỘI DUNG BÊN TRONG (Time, Title, Content)
-   ========================================= */
-
-/* Thời gian đăng */
 .elb-liveblog-post-time {
 	margin: 0;
 	font-size: 11px;
@@ -72,16 +46,13 @@ ul.elb-liveblog-list {
 	align-items: center;
 }
 
-/* Tiêu đề tin */
 .elb-liveblog-post-heading {
-	font-size: 20px;
 	line-height: 1.4;
 	color: #111;
 	font-weight: 700;
 	text-align: left;
 }
 
-/* Nội dung bài viết */
 .elb-liveblog-post-content {
 	font-size: 14px;
 	line-height: 1.6;
@@ -100,29 +71,21 @@ ul.elb-liveblog-list {
 	margin-top: 5px;
 }
 
-/* =========================================
-   6. TIN MỚI NHẤT (LIVE STATUS)
-   ========================================= */
-
-/* Nền và viền Cam cho tin đầu tiên */
 .elb-liveblog .elb-liveblog-post:first-child {
 	background-color: #fffbf5;
 	border-radius: 12px;
 }
 
-/* Chấm tròn tin đầu tiên đổi màu Cam và Nhấp nháy */
 .elb-liveblog .elb-liveblog-post:first-child::before {
 	border-color: #FFA84B;
 	background-color: #FFA84B;
 	animation: elb-pulse-orange 1s infinite;
 }
 
-/* Tiêu đề tin đầu tiên đổi màu Cam */
 .elb-liveblog .elb-liveblog-post:first-child .elb-liveblog-post-heading {
 	color: #d3811f;
 }
 
-/* Animation nhấp nháy */
 @keyframes elb-pulse-orange {
 	0% {
 		box-shadow: 0 0 0 0 rgba(255, 168, 75, 0.4);
@@ -137,11 +100,6 @@ ul.elb-liveblog-list {
 	}
 }
 
-/* =========================================
-   7. CÁC THÀNH PHẦN KHÁC (Button, Editor)
-   ========================================= */
-
-/* Nút Load More */
 #elb-load-more {
 	display: block;
 	margin: 20px auto;
@@ -159,7 +117,6 @@ ul.elb-liveblog-list {
 	background-color: #16555b;
 }
 
-/* Nút Edit (Chỉ hiện khi đăng nhập) */
 .elb-liveblog-actions {
 	display: block;
 	margin-top: 15px;
@@ -183,7 +140,6 @@ ul.elb-liveblog-list {
 	display: none;
 }
 
-/* Fade-in animation for new posts (replaces jQuery fadeIn) */
 .elb-new {
 	animation: elbFadeIn 0.4s ease-in;
 }
@@ -200,12 +156,10 @@ ul.elb-liveblog-list {
 	}
 }
 
-/* Disable pulse animation */
 .elb-pulse-off .elb-liveblog-post:first-child::before {
 	animation: none !important;
 }
 
-/* Lightbox Styles */
 .elb-lightbox {
 	position: fixed;
 	z-index: 99999;
@@ -234,12 +188,10 @@ ul.elb-liveblog-list {
 	box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
-/* Content Images Zoom Cursor */
 .elb-liveblog-post-content img {
 	cursor: zoom-in;
 }
 
-/* Custom Scrollbar for Fixed Height List */
 .elb-liveblog ul.elb-liveblog-list::-webkit-scrollbar {
 	width: 6px;
 }
