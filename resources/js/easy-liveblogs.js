@@ -1,29 +1,28 @@
-import moment from 'moment';
-
-moment.locale(elb.locale);
-
 // Vanilla JS Liveblog - No jQuery
 (function () {
     'use strict';
 
-    const liveblog = {
-        container: null,
-        documentTitle: null,
-        firstLoad: true,
-        newPosts: 0,
-        timestamp: false,
-        loader: null,
-        showNewButton: null,
-        loadMoreButton: null,
-        list: null,
-        statusMessage: null,
-        settings: null,
-        latestTimestamp: 0,
-
-        init: function () {
+    class EasyLiveblog {
+        constructor(container) {
+            this.container = container;
             this.documentTitle = document.title;
-            this.container = document.querySelector('.elb-liveblog');
+            this.firstLoad = true;
+            this.newPosts = 0;
+            this.timestamp = false;
+            this.loader = null;
+            this.showNewButton = null;
+            this.loadMoreButton = null;
+            this.list = null;
+            this.statusMessage = null;
+            this.settings = null;
+            this.latestTimestamp = 0;
+            this.lightbox = null;
+            this.lightboxImg = null;
 
+            this.init();
+        }
+
+        init() {
             if (!this.container) {
                 return;
             }
@@ -33,6 +32,8 @@ moment.locale(elb.locale);
             this.loader = this.container.querySelector('.elb-loader');
             this.list = this.container.querySelector('.elb-liveblog-list');
             this.statusMessage = this.container.querySelector('.elb-liveblog-closed-message');
+
+            this.initLightbox();
 
             // Initial fetch of the full feed
             this.fetchFeed();
@@ -45,10 +46,10 @@ moment.locale(elb.locale);
             if (this.loadMoreButton) {
                 this.loadMoreButton.addEventListener('click', () => this.loadMore());
             }
-        },
+        }
 
         // Fetch the full feed content
-        fetchFeed: function () {
+        fetchFeed() {
             const url = this.getEndpoint();
 
             fetch(url)
@@ -157,7 +158,7 @@ moment.locale(elb.locale);
 
                     // Show empty message if needed
                     if (this.list.querySelectorAll('li').length === 0) {
-                        const emptyMessage = document.querySelector('.elb-no-liveblog-entries-message');
+                        const emptyMessage = this.container.querySelector('.elb-no-liveblog-entries-message');
                         if (emptyMessage) {
                             emptyMessage.style.display = 'block';
                         }
@@ -189,10 +190,10 @@ moment.locale(elb.locale);
                     console.error('Easy Liveblogs: Error fetching feed', error);
                     setTimeout(() => this.poll(), elb.interval * 1000);
                 });
-        },
+        }
 
         // Lightweight check for updates
-        poll: function () {
+        poll() {
             const url = this.getEndpoint('/check');
 
             fetch(url)
@@ -220,9 +221,39 @@ moment.locale(elb.locale);
                     console.error('Easy Liveblogs: Error checking updates', error);
                     setTimeout(() => this.poll(), elb.interval * 1000);
                 });
-        },
+        }
 
-        renderPost: function (post) {
+        initLightbox() {
+            if (document.querySelector('.elb-lightbox')) {
+                this.lightbox = document.querySelector('.elb-lightbox');
+                this.lightboxImg = this.lightbox.querySelector('img');
+                return;
+            }
+
+            const lightboxHTML = `<div class="elb-lightbox"><img src="" alt="Liveblog Lightbox"></div>`;
+            document.body.insertAdjacentHTML('beforeend', lightboxHTML);
+
+            this.lightbox = document.querySelector('.elb-lightbox');
+            this.lightboxImg = this.lightbox.querySelector('img');
+
+            this.lightbox.addEventListener('click', () => {
+                this.lightbox.classList.remove('active');
+            });
+        }
+
+        bindLightbox(container) {
+            const images = container.querySelectorAll('.elb-liveblog-post-content img');
+            images.forEach(img => {
+                img.style.cursor = 'zoom-in';
+                img.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.lightboxImg.src = img.src;
+                    this.lightbox.classList.add('active');
+                });
+            });
+        }
+
+        renderPost(post) {
             const li = document.createElement('li');
             li.className = 'elb-liveblog-post';
             li.dataset.elbPostDatetime = post.timestamp;
@@ -247,24 +278,25 @@ moment.locale(elb.locale);
             }
 
             li.innerHTML = html;
+            this.bindLightbox(li);
             return li;
-        },
+        }
 
-        renderTime: function (post) {
+        renderTime(post) {
             if (elb.datetime_format === 'human') {
-                const timeAgo = moment(post.datetime).fromNow();
+                const timeAgo = this.getTimeAgo(post.datetime);
                 return `<p class="elb-liveblog-post-time"><time class="elb-js-update-time" datetime="${post.datetime}">${timeAgo}</time></p>`;
             } else {
                 return `<p class="elb-liveblog-post-time"><time datetime="${post.datetime}">${post.time}</time></p>`;
             }
-        },
+        }
 
-        renderAuthor: function (post) {
+        renderAuthor(post) {
             const author = post.author ? this.escapeHtml(post.author) : '';
             return `<p class="elb-liveblog-post-author">By ${author}</p>`;
-        },
+        }
 
-        renderSharing: function (post) {
+        renderSharing(post) {
             const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(post.permalink)}`;
             const xUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(post.title)} ${encodeURIComponent(post.permalink)}`;
             const mailUrl = `mailto:?&subject=${encodeURIComponent(post.title)}&body=${encodeURIComponent(post.permalink)}`;
@@ -287,24 +319,24 @@ moment.locale(elb.locale);
 					</a>
 				</div>
 			`;
-        },
+        }
 
-        renderActions: function (post) {
+        renderActions(post) {
             const editUrl = `${window.location.origin}/wp-admin/post.php?post=${post.id}&action=edit`;
             return `
 				<div class="elb-liveblog-actions">
 					<a href="${editUrl}" rel="nofollow">Edit This</a>
 				</div>
 			`;
-        },
+        }
 
-        escapeHtml: function (text) {
+        escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
-        },
+        }
 
-        getTime: function () {
+        getTime() {
             const d = new Date();
             const time = d.getTime();
 
@@ -312,9 +344,9 @@ moment.locale(elb.locale);
                 return 0;
             }
             return Math.round(time / 60000);
-        },
+        }
 
-        getEndpoint: function (path = '') {
+        getEndpoint(path = '') {
             let url = this.container.dataset.endpoint;
             // Endpoint in dataset usually ends with /liveblog/{id}
 
@@ -328,9 +360,9 @@ moment.locale(elb.locale);
             }
 
             return url;
-        },
+        }
 
-        showNew: function () {
+        showNew() {
             const newPosts = this.list.querySelectorAll('li.elb-new:not([style*="display: none"])');
             newPosts.forEach(post => {
                 post.classList.remove('elb-new');
@@ -340,14 +372,14 @@ moment.locale(elb.locale);
                 this.showNewButton.style.display = 'none';
             }
             this.resetUpdateCounter();
-        },
+        }
 
-        resetUpdateCounter: function () {
+        resetUpdateCounter() {
             this.newPosts = 0;
             document.title = this.documentTitle;
-        },
+        }
 
-        loadMore: function () {
+        loadMore() {
             const hiddenPosts = this.list.querySelectorAll('li.elb-hide.elb-liveblog-initial-post');
             const showEntries = parseInt(this.container.dataset.showEntries) || 10;
 
@@ -373,23 +405,81 @@ moment.locale(elb.locale);
             if (typeof elb_after_load_more_callback === 'function') {
                 elb_after_load_more_callback();
             }
-        },
+        }
 
-        updateTimestamps: function () {
+        updateTimestamps() {
             const posts = this.list.querySelectorAll('li');
             posts.forEach(post => {
                 const timeElement = post.querySelector('.elb-js-update-time');
                 if (timeElement) {
                     const datetime = timeElement.getAttribute('datetime');
-                    timeElement.textContent = moment(datetime).fromNow();
+                    timeElement.textContent = this.getTimeAgo(datetime);
                 }
             });
         }
+
+        getTimeAgo(datetime) {
+            const date = new Date(datetime);
+            const now = new Date();
+            const diff = (now - date) / 1000;
+            const locale = elb.locale.replace('_', '-');
+
+            if (typeof Intl === 'undefined' || typeof Intl.RelativeTimeFormat === 'undefined') {
+                return date.toLocaleDateString();
+            }
+
+            const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+
+            if (diff < 60) {
+                return rtf.format(-Math.round(diff), 'seconds');
+            } else if (diff < 3600) {
+                return rtf.format(-Math.round(diff / 60), 'minutes');
+            } else if (diff < 86400) {
+                return rtf.format(-Math.round(diff / 3600), 'hours');
+            } else if (diff < 2592000) {
+                return rtf.format(-Math.round(diff / 86400), 'days');
+            } else if (diff < 31536000) {
+                return rtf.format(-Math.round(diff / 2592000), 'months');
+            } else {
+                return rtf.format(-Math.round(diff / 31536000), 'years');
+            }
+        }
+    }
+
+    // Expose Global Object for Elementor/External Use
+    window.ELB = {
+        init: function (container = null) {
+            if (container) {
+                // Initialize specific container (e.g., inside Elementor widget)
+                const liveblogContainer = container.querySelector('.elb-liveblog');
+                if (liveblogContainer && !liveblogContainer.dataset.elbInitialized) {
+                    new EasyLiveblog(liveblogContainer);
+                    liveblogContainer.dataset.elbInitialized = 'true';
+                }
+            } else {
+                // Initialize all on page
+                const containers = document.querySelectorAll('.elb-liveblog');
+                containers.forEach(container => {
+                    if (!container.dataset.elbInitialized) {
+                        new EasyLiveblog(container);
+                        container.dataset.elbInitialized = 'true';
+                    }
+                });
+            }
+        }
     };
 
+    // Auto-init on page load
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => liveblog.init());
+        document.addEventListener('DOMContentLoaded', () => window.ELB.init());
     } else {
-        liveblog.init();
+        window.ELB.init();
     }
+
+    // Elementor Hook
+    window.addEventListener('elementor/frontend/init', () => {
+        elementorFrontend.hooks.addAction('frontend/element_ready/elb_liveblog.default', function ($scope) {
+            window.ELB.init($scope[0]);
+        });
+    });
 })();

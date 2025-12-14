@@ -46,7 +46,8 @@ if ( ! class_exists( 'Easy_Liveblogs' ) ) {
 				self::$instance->define_constants();
 				self::$instance->includes();
 
-				add_action( 'plugins_loaded', array( self::$instance, 'load_textdomain' ) );
+			add_action( 'plugins_loaded', array( self::$instance, 'load_textdomain' ) );
+				add_action( 'plugins_loaded', array( self::$instance, 'load_integrations' ) );
 				add_action( 'wp_enqueue_scripts', array( self::$instance, 'register_styles' ) );
 				add_action( 'admin_enqueue_scripts', array( self::$instance, 'register_styles' ) );
 				add_action( 'wp_enqueue_scripts', array( self::$instance, 'register_scripts' ) );
@@ -81,6 +82,18 @@ if ( ! class_exists( 'Easy_Liveblogs' ) ) {
 			require_once $this->get_plugin_path() . 'includes/api/class-elb-feed.php';
 			require_once $this->get_plugin_path() . 'includes/caching/class-elb-transient.php';
 			require_once $this->get_plugin_path() . 'includes/caching/class-elb-object.php';
+		}
+
+		/**
+		 * Load integrations
+		 */
+		public function load_integrations() {
+			// Elementor
+			if ( class_exists( '\Elementor\Plugin' ) ) {
+				require_once $this->get_plugin_path() . 'includes/integrations/elementor/class-elb-elementor.php';
+				$elementor_integration = new ELB_Elementor_Integration();
+				$elementor_integration->init();
+			}
 		}
 
 		/**

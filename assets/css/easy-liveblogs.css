@@ -9,7 +9,7 @@
 ul.elb-liveblog-list {
 	list-style: none;
 	margin: 0;
-	padding: 0 0 0 20px !important;
+	padding: 0 0 0 20px;
 	position: relative;
 }
 
@@ -20,8 +20,8 @@ ul.elb-liveblog-list {
 	position: relative;
 	background-color: #ffffff;
 	border-radius: 8px;
-	padding: 20px !important;
-	margin-bottom: 25px !important;
+	padding: 20px;
+	margin-bottom: 25px;
 	/* Khoảng cách giữa các tin */
 	box-shadow: 0 2px 5px rgba(29, 109, 116, 0.08);
 	/* Bóng đổ màu Teal nhạt */
@@ -74,7 +74,7 @@ ul.elb-liveblog-list {
 
 /* Tiêu đề tin */
 .elb-liveblog-post-heading {
-	font-size: 20px !important;
+	font-size: 20px;
 	line-height: 1.4;
 	color: #111;
 	font-weight: 700;
@@ -198,4 +198,61 @@ ul.elb-liveblog-list {
 		opacity: 1;
 		transform: translateY(0);
 	}
+}
+
+/* Disable pulse animation */
+.elb-pulse-off .elb-liveblog-post:first-child::before {
+	animation: none !important;
+}
+
+/* Lightbox Styles */
+.elb-lightbox {
+	position: fixed;
+	z-index: 99999;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.9);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.3s;
+}
+
+.elb-lightbox.active {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.elb-lightbox img {
+	max-width: 90%;
+	max-height: 90%;
+	object-fit: contain;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Content Images Zoom Cursor */
+.elb-liveblog-post-content img {
+	cursor: zoom-in;
+}
+
+/* Custom Scrollbar for Fixed Height List */
+.elb-liveblog ul.elb-liveblog-list::-webkit-scrollbar {
+	width: 6px;
+}
+
+.elb-liveblog ul.elb-liveblog-list::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+
+.elb-liveblog ul.elb-liveblog-list::-webkit-scrollbar-thumb {
+	background: #c1c1c1;
+	border-radius: 10px;
+}
+
+.elb-liveblog ul.elb-liveblog-list::-webkit-scrollbar-thumb:hover {
+	background: #a8a8a8;
 }

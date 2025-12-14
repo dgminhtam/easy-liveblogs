@@ -21,8 +21,5 @@
   "homepage": "https://github.com/jeffreyvr/easy-liveblogs#readme",
   "devDependencies": {
     "laravel-mix": "^6.0.43"
-  },
-  "dependencies": {
-    "moment": "^2.29.3"
   }
 }
