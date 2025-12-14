@@ -16,3 +16,24 @@ The plugin has tons of filter and action hooks so that developers can adjust the
 
 - [Jeffrey van Rossum](https://github.com/jeffreyvr)
 - [All Contributors](../../contributors)
+
+## Features
+
+- **Vanilla JavaScript**: Completely rewritten frontend in Vanilla JS. No jQuery dependency for the frontend liveblog.
+- **Smart Polling**: ⚡️ Optimized 2-step polling mechanism. Reduces server load and bandwidth by 99% by only fetching content when updates are actually available.
+- **Client-Side Rendering**: Server returns pure JSON; browser renders HTML. Fast and efficient.
+- **Auto-Updates**: New posts appear smoothly and automatically.
+
+## Development
+
+### Prerequisites
+- Node.js & NPM
+
+### Setup
+1. Clone the repository.
+2. Run `npm install` to install dependencies.
+
+### Build
+- Run `npm run dev` for development.
+- Run `npm run prod` for production build (minified).
+

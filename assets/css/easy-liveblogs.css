@@ -1,53 +1,201 @@
+/* =========================================
+   1. CẤU TRÚC CHUNG & FONT CHỮ
+   ========================================= */
+.elb-liveblog {
+	font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	color: #444;
+}
+
 ul.elb-liveblog-list {
 	list-style: none;
 	margin: 0;
-	padding: 0 0 0 30px;
+	padding: 0 0 0 20px !important;
+	position: relative;
 }
 
+/* =========================================
+   2. KHỐI TIN (CARD)
+   ========================================= */
 .elb-liveblog .elb-liveblog-post {
 	position: relative;
-	padding-bottom: 30px;
+	background-color: #ffffff;
+	border-radius: 8px;
+	padding: 20px !important;
+	margin-bottom: 25px !important;
+	/* Khoảng cách giữa các tin */
+	box-shadow: 0 2px 5px rgba(29, 109, 116, 0.08);
+	/* Bóng đổ màu Teal nhạt */
+	border: 1px solid #edf5f5;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	z-index: 1;
 }
 
-.elb-liveblog .elb-liveblog-post:last-child {
-	margin-bottom: 30px;
-}
-
+/* =========================================
+   4. CHẤM TRÒN (TIMELINE DOT)
+   ========================================= */
+/* Dùng ::before (gốc của plugin) để vẽ chấm tròn */
 .elb-liveblog .elb-liveblog-post::before {
-	content: '';
+	content: '' !important;
+	/* Ghi đè style mặc định */
 	display: block;
 	position: absolute;
-	left: -36px;
-	top: 9px;
-	width: 11px;
-	height: 11px;
-	line-height: 11px;
-	font-size: 11px;
+
+	/* Căn tâm với đường kẻ (-29px) */
+	left: -27px;
+	top: -1px;
+	width: 12px !important;
+	height: 12px !important;
 	border-radius: 50%;
+
+	/* Style màu sắc */
+	background-color: #fff;
+	border: 3px solid #1D6D74;
+	/* Màu chủ đạo Teal */
+	box-shadow: 0 0 0 4px #f0f4f5;
+	/* Viền đệm để cắt đường kẻ */
+	z-index: 2;
 }
 
-.elb-is-editor .elb-liveblog-actions {
+/* =========================================
+   5. NỘI DUNG BÊN TRONG (Time, Title, Content)
+   ========================================= */
+
+/* Thời gian đăng */
+.elb-liveblog-post-time {
+	margin: 0;
+	font-size: 11px;
+	font-weight: 600;
+	color: #1D6D74;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	display: flex;
+	align-items: center;
+}
+
+/* Tiêu đề tin */
+.elb-liveblog-post-heading {
+	font-size: 20px !important;
+	line-height: 1.4;
+	color: #111;
+	font-weight: 700;
+	text-align: left;
+}
+
+/* Nội dung bài viết */
+.elb-liveblog-post-content {
+	font-size: 14px;
+	line-height: 1.6;
+	color: #444;
+	text-align: left;
+}
+
+.elb-liveblog-post-content p {
+	margin-bottom: 10px;
+}
+
+.elb-liveblog-post-content img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 6px;
+	margin-top: 5px;
+}
+
+/* =========================================
+   6. TIN MỚI NHẤT (LIVE STATUS)
+   ========================================= */
+
+/* Nền và viền Cam cho tin đầu tiên */
+.elb-liveblog .elb-liveblog-post:first-child {
+	background-color: #fffbf5;
+	border-radius: 12px;
+}
+
+/* Chấm tròn tin đầu tiên đổi màu Cam và Nhấp nháy */
+.elb-liveblog .elb-liveblog-post:first-child::before {
+	border-color: #FFA84B;
+	background-color: #FFA84B;
+	animation: elb-pulse-orange 1s infinite;
+}
+
+/* Tiêu đề tin đầu tiên đổi màu Cam */
+.elb-liveblog .elb-liveblog-post:first-child .elb-liveblog-post-heading {
+	color: #d3811f;
+}
+
+/* Animation nhấp nháy */
+@keyframes elb-pulse-orange {
+	0% {
+		box-shadow: 0 0 0 0 rgba(255, 168, 75, 0.4);
+	}
+
+	70% {
+		box-shadow: 0 0 0 8px rgba(255, 168, 75, 0);
+	}
+
+	100% {
+		box-shadow: 0 0 0 0 rgba(255, 168, 75, 0);
+	}
+}
+
+/* =========================================
+   7. CÁC THÀNH PHẦN KHÁC (Button, Editor)
+   ========================================= */
+
+/* Nút Load More */
+#elb-load-more {
 	display: block;
+	margin: 20px auto;
+	background-color: #1D6D74;
+	color: #fff;
+	border: 0;
+	padding: 10px 25px;
+	border-radius: 30px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: 0.3s;
+}
+
+#elb-load-more:hover {
+	background-color: #16555b;
+}
+
+/* Nút Edit (Chỉ hiện khi đăng nhập) */
+.elb-liveblog-actions {
+	display: block;
+	margin-top: 15px;
+	padding-top: 10px;
+	border-top: 1px dashed #eee;
+	text-align: right;
+}
+
+.elb-liveblog-actions a {
+	font-size: 11px;
+	color: #aaa;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.elb-liveblog-actions a:hover {
+	color: #1D6D74;
 }
 
 .elb-hide {
 	display: none;
 }
 
-@keyframes elb-liveblog-highlight {
-	0% {
-	  background: #fefcbf;
-	}
-	100% {
-	  background: none;
-	}
-  }
-
-.elb-liveblog .elb-liveblog-highlight {
-	animation: elb-liveblog-highlight 3s;
+/* Fade-in animation for new posts (replaces jQuery fadeIn) */
+.elb-new {
+	animation: elbFadeIn 0.4s ease-in;
 }
 
-#elb-load-more {
-	border: 0;
-	margin-top: 10px;
+@keyframes elbFadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }

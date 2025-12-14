@@ -26,34 +26,13 @@ class Entry {
 		$instance->time     = get_the_date( 'H:i', $post );
 		$instance->datetime = get_the_date( 'c', $post );
 		$instance->date     = get_the_date( 'Y-m-d', $post );
-		$instance->html     = $instance->get_html();
 		$instance->modified = get_the_modified_date( 'c' );
-		$instance->author = get_the_author();
+		$instance->author   = get_the_author();
+		$instance->permalink = elb_get_entry_url( $post );
+		$instance->timestamp = get_post_time( 'U' );
 
 		wp_reset_postdata();
 
 		return apply_filters( 'elb_api_entry', $instance );
-	}
-
-	public function get_html() {
-		global $post;
-
-		$args = array(
-			'class' => array( 'elb-liveblog-post' ),
-		);
-
-		$classes = apply_filters( 'elb_liveblog_list_item_classes', implode( ' ', $args['class'] ) );
-
-		$content = '<li data-elb-post-datetime="' . get_post_time( 'U' ) . '" data-elb-post-id="' . esc_attr( $post->ID ) . '" class="' . esc_attr( $classes ) . '">';
-
-		ob_start();
-
-		elb_get_template_part( 'post' );
-
-		$content .= ob_get_clean();
-
-		$content .= '</li>';
-
-		return $content;
 	}
 }

@@ -2,3 +2,7 @@
 /.idea
 /.vscode
 /.nova
+/node_modules
+/easy-liveblogs.zip
+*.zip
+*.log

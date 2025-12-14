@@ -22,6 +22,16 @@ class FeedFactory {
 			'status'      => get_post_meta( $liveblog->ID, '_elb_status', true ),
 			'last_update' => $entries[0]->datetime ?? get_post_modified_time( 'Y-m-d H:i:s', false, $liveblog ),
 			'updates'     => $entries,
+			'settings'    => array(
+				'showAuthor'  => elb_display_author_name(),
+				'showSharing' => elb_display_social_sharing(),
+				'isEditor'    => current_user_can( 'edit_post', $liveblog_id ),
+				'socialIcons' => array(
+					'facebook' => elb_get_social_logo( 'facebook' ),
+					'x'        => elb_get_social_logo( 'x' ),
+					'mail'     => elb_get_social_logo( 'mail' ),
+				),
+			),
 		);
 
 		return apply_filters( 'elb_api_feed', $feed, $liveblog, $liveblog->ID );
