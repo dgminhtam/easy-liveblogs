@@ -79,6 +79,18 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 		);
 
 		$this->add_control(
+			'load_more_text',
+			array(
+				'label'     => esc_html__( 'Load More Button Text', 'easy-liveblogs' ),
+				'type'      => \Elementor\Controls_Manager::TEXT,
+				'default'   => esc_html__( 'Load more', 'easy-liveblogs' ),
+				'condition' => array(
+					'pagination_type!' => 'infinite',
+				),
+			)
+		);
+
+		$this->add_control(
 			'append_timestamp',
 			array(
 				'label'        => esc_html__( 'Append timestamp', 'easy-liveblogs' ),
@@ -359,7 +371,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 			\Elementor\Group_Control_Typography::get_type(),
 			array(
 				'name'     => 'buttons_typography',
-				'selector' => '{{WRAPPER}} .elb-button',
+				'selector' => '{{WRAPPER}} #elb-load-more',
 			)
 		);
 
@@ -378,7 +390,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 				'label'     => esc_html__( 'Text Color', 'easy-liveblogs' ),
 				'type'      => \Elementor\Controls_Manager::COLOR,
 				'selectors' => array(
-					'{{WRAPPER}} .elb-button' => 'color: {{VALUE}} !important;',
+					'{{WRAPPER}} #elb-load-more' => 'color: {{VALUE}} !important;',
 				),
 			)
 		);
@@ -389,7 +401,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 				'label'     => esc_html__( 'Background Color', 'easy-liveblogs' ),
 				'type'      => \Elementor\Controls_Manager::COLOR,
 				'selectors' => array(
-					'{{WRAPPER}} .elb-button' => 'background-color: {{VALUE}} !important;',
+					'{{WRAPPER}} #elb-load-more' => 'background-color: {{VALUE}} !important;',
 				),
 			)
 		);
@@ -399,7 +411,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 			array(
 				'name'     => 'buttons_border',
 				'label'    => esc_html__( 'Border', 'easy-liveblogs' ),
-				'selector' => '{{WRAPPER}} .elb-button',
+				'selector' => '{{WRAPPER}} #elb-load-more',
 			)
 		);
 
@@ -410,7 +422,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 				'type'       => \Elementor\Controls_Manager::DIMENSIONS,
 				'size_units' => array( 'px', '%' ),
 				'selectors'  => array(
-					'{{WRAPPER}} .elb-button' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} #elb-load-more' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				),
 			)
 		);
@@ -420,7 +432,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 			array(
 				'name'     => 'buttons_box_shadow',
 				'label'    => esc_html__( 'Box Shadow', 'easy-liveblogs' ),
-				'selector' => '{{WRAPPER}} .elb-button',
+				'selector' => '{{WRAPPER}} #elb-load-more',
 			)
 		);
 
@@ -439,7 +451,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 				'label'     => esc_html__( 'Text Color', 'easy-liveblogs' ),
 				'type'      => \Elementor\Controls_Manager::COLOR,
 				'selectors' => array(
-					'{{WRAPPER}} .elb-button:hover' => 'color: {{VALUE}} !important;',
+					'{{WRAPPER}} #elb-load-more:hover' => 'color: {{VALUE}} !important;',
 				),
 			)
 		);
@@ -450,7 +462,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 				'label'     => esc_html__( 'Background Color', 'easy-liveblogs' ),
 				'type'      => \Elementor\Controls_Manager::COLOR,
 				'selectors' => array(
-					'{{WRAPPER}} .elb-button:hover' => 'background-color: {{VALUE}} !important;',
+					'{{WRAPPER}} #elb-load-more:hover' => 'background-color: {{VALUE}} !important;',
 				),
 			)
 		);
@@ -460,7 +472,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 			array(
 				'name'     => 'buttons_hover_border',
 				'label'    => esc_html__( 'Border', 'easy-liveblogs' ),
-				'selector' => '{{WRAPPER}} .elb-button:hover',
+				'selector' => '{{WRAPPER}} #elb-load-more:hover',
 			)
 		);
 
@@ -471,7 +483,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 				'type'       => \Elementor\Controls_Manager::DIMENSIONS,
 				'size_units' => array( 'px', '%' ),
 				'selectors'  => array(
-					'{{WRAPPER}} .elb-button:hover' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} #elb-load-more:hover' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				),
 			)
 		);
@@ -481,7 +493,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 			array(
 				'name'     => 'buttons_hover_box_shadow',
 				'label'    => esc_html__( 'Box Shadow', 'easy-liveblogs' ),
-				'selector' => '{{WRAPPER}} .elb-button:hover',
+				'selector' => '{{WRAPPER}} #elb-load-more:hover',
 			)
 		);
 
@@ -496,7 +508,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 				'type'       => \Elementor\Controls_Manager::DIMENSIONS,
 				'size_units' => array( 'px', '%', 'em' ),
 				'selectors'  => array(
-					'{{WRAPPER}} .elb-button' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}} !important;',
+					'{{WRAPPER}} #elb-load-more' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}} !important;',
 				),
 				'separator'  => 'before',
 			)
@@ -1003,7 +1015,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 
             <div class="elb-liveblog-closed-message" style="display: none;"><?php echo esc_html__( 'The liveblog has ended.', 'easy-liveblogs' ); ?></div>
 
-            <button id="elb-show-new-posts" class="elb-button button" style="display: none;"></button>
+
 
             <div class="elb-no-liveblog-entries-message" style="display: none;"><?php echo esc_html__( 'No liveblog updates yet.', 'easy-liveblogs' ); ?></div>
 
@@ -1031,7 +1043,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
                 </svg>
             </div>
 
-            <button id="elb-load-more" style="display: none;" class="elb-button button"><?php echo esc_html__( 'Load more', 'easy-liveblogs' ); ?></button>
+            <button id="elb-load-more" style="display: none;" class="elb-button button"><?php echo esc_html( $settings['load_more_text'] ); ?></button>
         </div>
         <?php
 

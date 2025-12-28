@@ -175,7 +175,7 @@
 
                             if ((index + 1) > this.container.dataset.showEntries) {
                                 postElement.classList.add('elb-hide', 'elb-liveblog-initial-post');
-                                if (this.loadMoreButton) {
+                                if (this.loadMoreButton && this.paginationMode !== 'infinite') {
                                     this.loadMoreButton.style.display = 'block';
                                 }
                             }

@@ -114,7 +114,7 @@ class ELB_Liveblog {
 
 		$content .= '<div class="elb-liveblog-closed-message" style="display: none;">' . __( 'The liveblog has ended.', ELB_TEXT_DOMAIN ) . '</div>';
 
-		$content .= '<button id="elb-show-new-posts" class="elb-button button" style="display: none;"></button>';
+
 
 		$content .= '<div class="elb-no-liveblog-entries-message" style="display: none;">' . __( 'No liveblog updates yet.', ELB_TEXT_DOMAIN ) . '</div>';
 
