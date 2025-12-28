@@ -118,51 +118,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 
 		$this->end_controls_section();
 
-		$this->start_controls_section(
-			'advanced_layout_section',
-			array(
-				'label' => esc_html__( 'Advanced Layout', 'easy-liveblogs' ),
-				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
-			)
-		);
 
-		$this->add_control(
-			'enable_custom_template',
-			array(
-				'label'        => esc_html__( 'Enable Custom Template', 'easy-liveblogs' ),
-				'type'         => \Elementor\Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__( 'Yes', 'easy-liveblogs' ),
-				'label_off'    => esc_html__( 'No', 'easy-liveblogs' ),
-				'return_value' => 'yes',
-				'default'      => 'no',
-			)
-		);
-
-		$this->add_control(
-			'custom_template_html',
-			array(
-				'label'     => esc_html__( 'HTML Template', 'easy-liveblogs' ),
-				'type'      => \Elementor\Controls_Manager::CODE,
-				'language'  => 'html',
-				'rows'      => 20,
-				'condition' => array(
-					'enable_custom_template' => 'yes',
-				),
-			)
-		);
-
-		$this->add_control(
-			'template_help',
-			array(
-				'type'      => \Elementor\Controls_Manager::RAW_HTML,
-				'raw'       => '<small>' . esc_html__( 'Available placeholders: {{title}}, {{content}}, {{time}}, {{date}}, {{author}}, {{link}}, {{id}}', 'easy-liveblogs' ) . '</small>',
-				'condition' => array(
-					'enable_custom_template' => 'yes',
-				),
-			)
-		);
-
-		$this->end_controls_section();
 
 		$this->start_controls_section(
 			'style_section',
@@ -1007,11 +963,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
              data-show-entries="<?php echo esc_attr( $show_entries ); ?>" 
              data-endpoint="<?php echo esc_url( $endpoint ); ?>">
             
-            <?php if ( ! empty( $settings['enable_custom_template'] ) && $settings['enable_custom_template'] === 'yes' && ! empty( $settings['custom_template_html'] ) ) : ?>
-                <template class="elb-custom-template">
-                    <?php echo $settings['custom_template_html']; ?>
-                </template>
-            <?php endif; ?>
+
 
             <div class="elb-liveblog-closed-message" style="display: none;"><?php echo esc_html__( 'The liveblog has ended.', 'easy-liveblogs' ); ?></div>
 

@@ -7,7 +7,7 @@
             this.container = container;
             this.documentTitle = document.title;
             this.firstLoad = true;
-            this.newPosts = 0;
+
             this.timestamp = false;
             this.loader = null;
             this.loadMoreButton = null;
@@ -84,8 +84,8 @@
                         }
                     });
                 }, {
-                    root: null,
-                    rootMargin: '0px',
+                    root: this.container.querySelector('.elb-liveblog-list-container') || null,
+                    rootMargin: '200px',
                     threshold: 0.1
                 });
 
@@ -343,54 +343,26 @@
             li.dataset.elbPostDatetime = post.timestamp;
             li.dataset.elbPostId = post.id;
 
-            // Check for Custom Template
-            const template = this.container.querySelector('.elb-custom-template');
+            // Default Rendering (Optimized)
+            let html = '';
+            html += this.renderTime(post);
 
-            if (template) {
-                let html = template.innerHTML;
-
-                // Replace Placeholders
-                const timeHtml = this.renderTime(post);
-                // Extract just the time text for simpler replacement if needed, 
-                // but usually user wants the full formatted time block or they build their own.
-                // For {{time}}, we'll pass the full HTML we generated for consistency, 
-                // or we could pass raw values. Let's stick to the prompt requirements.
-
-                // We need to be careful about what renderTime returns (it returns a <p> string).
-                // If the user puts {{time}} inside a <p>, it might be nested <p><p>...</p></p>.
-                // But for now let's follow the prompt mapping: {{time}} -> this.renderTime(post)
-
-                html = html.replace(/{{title}}/g, post.title);
-                html = html.replace(/{{content}}/g, post.content);
-                html = html.replace(/{{time}}/g, this.renderTime(post));
-                html = html.replace(/{{date}}/g, post.datetime); // Assuming post.datetime is the formatted date string
-                html = html.replace(/{{author}}/g, post.author ? post.author : '');
-                html = html.replace(/{{link}}/g, post.permalink);
-                html = html.replace(/{{id}}/g, post.id);
-
-                li.innerHTML = html;
-            } else {
-                // Default Rendering
-                let html = '';
-                html += this.renderTime(post);
-
-                if (this.settings.showAuthor) {
-                    html += this.renderAuthor(post);
-                }
-
-                html += `<h2 class="elb-liveblog-post-heading">${post.title}</h2>`;
-                html += `<div class="elb-liveblog-post-content">${post.content}</div>`;
-
-                if (this.settings.showSharing) {
-                    html += this.renderSharing(post);
-                }
-
-                if (this.settings.isEditor) {
-                    html += this.renderActions(post);
-                }
-
-                li.innerHTML = html;
+            if (this.settings.showAuthor) {
+                html += this.renderAuthor(post);
             }
+
+            html += `<h2 class="elb-liveblog-post-heading">${post.title}</h2>`;
+            html += `<div class="elb-liveblog-post-content">${post.content}</div>`;
+
+            if (this.settings.showSharing) {
+                html += this.renderSharing(post);
+            }
+
+            if (this.settings.isEditor) {
+                html += this.renderActions(post);
+            }
+
+            li.innerHTML = html;
 
             this.bindLightbox(li);
             return li;
@@ -533,6 +505,12 @@
                 if (typeof elb_after_load_more_callback === 'function') {
                     elb_after_load_more_callback();
                 }
+
+                // Force re-check observer
+                if (this.paginationMode === 'infinite' && this.observer && this.sentinel) {
+                    this.observer.unobserve(this.sentinel);
+                    this.observer.observe(this.sentinel);
+                }
             }, 600); // 600ms Delay
         }
 
@@ -557,21 +535,29 @@
                 return date.toLocaleDateString();
             }
 
+            // less than 1 minute: "Just now" / "Vừa xong"
+            if (diff < 60) {
+                return (locale.startsWith('vi')) ? 'Vừa xong' : 'Just now';
+            }
+
             const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
 
-            if (diff < 60) {
-                return rtf.format(-Math.round(diff), 'seconds');
-            } else if (diff < 3600) {
+            // less than 24 hours (86400 seconds): Relative time
+            if (diff < 3600) {
                 return rtf.format(-Math.round(diff / 60), 'minutes');
             } else if (diff < 86400) {
                 return rtf.format(-Math.round(diff / 3600), 'hours');
-            } else if (diff < 2592000) {
-                return rtf.format(-Math.round(diff / 86400), 'days');
-            } else if (diff < 31536000) {
-                return rtf.format(-Math.round(diff / 2592000), 'months');
-            } else {
-                return rtf.format(-Math.round(diff / 31536000), 'years');
             }
+
+            // more than 24 hours: Absolute date time
+            // Format: 28 thg 12, 2025, 10:30
+            return new Intl.DateTimeFormat(locale, {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric'
+            }).format(date);
         }
     }
 
