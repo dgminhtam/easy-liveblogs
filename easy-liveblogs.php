@@ -143,7 +143,9 @@ if ( ! class_exists( 'Easy_Liveblogs' ) ) {
 						'interval'        => elb_get_update_interval(),
 						'new_post_msg'    => __( 'There is %s update.', ELB_TEXT_DOMAIN ),
 						'new_posts_msg'   => __( 'There are %s updates.', ELB_TEXT_DOMAIN ),
-						'now_more_posts'  => __( "That's it.", ELB_TEXT_DOMAIN ),
+						'now_more_posts'     => __( "That's it.", ELB_TEXT_DOMAIN ),
+						'content_protection' => elb_get_option( 'enable_content_protection', false ),
+						'pagination_type'    => elb_get_option( 'pagination_type', 'button' ),
 					)
 				);
 

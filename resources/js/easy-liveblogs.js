@@ -46,6 +46,99 @@
             if (this.loadMoreButton) {
                 this.loadMoreButton.addEventListener('click', () => this.loadMore());
             }
+
+            // Content Protection
+            this.initContentProtection();
+
+            // Pagination Mode
+            const widgetMode = this.container.dataset.paginationType;
+            const globalMode = elb.pagination_type;
+            this.paginationMode = widgetMode && widgetMode !== 'default' ? widgetMode : (globalMode || 'button');
+
+            this.isLoading = false;
+            this.observer = null;
+
+            if (this.paginationMode === 'infinite') {
+                if (this.loadMoreButton) {
+                    this.loadMoreButton.style.display = 'none';
+                }
+
+                // Create a sentinel element for IntersectionObserver
+                this.sentinel = document.createElement('div');
+                this.sentinel.className = 'elb-infinite-scroll-sentinel';
+                this.container.appendChild(this.sentinel);
+
+                this.setupInfiniteScroll();
+            }
+        }
+
+        setupInfiniteScroll() {
+            if ('IntersectionObserver' in window) {
+                this.observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && !this.isLoading) {
+                            // Check if there are actually more posts to load
+                            const hiddenPosts = this.list.querySelectorAll('li.elb-hide.elb-liveblog-initial-post');
+                            if (hiddenPosts.length > 0) {
+                                this.loadMore();
+                            }
+                        }
+                    });
+                }, {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 0.1
+                });
+
+                if (this.sentinel) {
+                    this.observer.observe(this.sentinel);
+                }
+            } else {
+                // Fallback for browsers not supporting IntersectionObserver
+                // Show button instead
+                if (this.loadMoreButton) {
+                    this.loadMoreButton.style.display = 'block';
+                }
+            }
+        }
+
+        initContentProtection() {
+            // Check global setting (via Settings)
+            const globalProtection = elb.content_protection === '1' || elb.content_protection === true;
+
+            // Check widget specific setting via data attribute
+            const widgetProtection = this.container.dataset.contentProtection === '1';
+
+            // Function to check if protection should be active
+            if (globalProtection || widgetProtection) {
+
+                // Apply CSS to prevent text selection
+                this.container.style.userSelect = 'none';
+                this.container.style.webkitUserSelect = 'none';
+                this.container.style.mozUserSelect = 'none';
+                this.container.style.msUserSelect = 'none';
+
+                // Prevent right-click context menu
+                this.container.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    return false;
+                });
+
+                // Prevent copy keyboard shortcuts (Ctrl+C / Cmd+C)
+                this.container.addEventListener('keydown', (e) => {
+                    // Check for Ctrl+C (Windows/Linux) or Cmd+C (Mac)
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+
+                // Prevent drag selection
+                this.container.addEventListener('selectstart', (e) => {
+                    e.preventDefault();
+                    return false;
+                });
+            }
         }
 
         // Fetch the full feed content
@@ -380,25 +473,55 @@
         }
 
         loadMore() {
+            if (this.isLoading) return;
+            this.isLoading = true;
+
+            // Show loader if infinite scroll
+            if (this.paginationMode === 'infinite' && this.loader) {
+                this.loader.style.display = 'block';
+            }
+
+            // Simulate network delay or just process immediate DOM changes
+            // Since this plugin currently hides posts with CSS, the "load" is technically instant.
+            // But we keep the structure for potential future AJAX loading.
+
             const hiddenPosts = this.list.querySelectorAll('li.elb-hide.elb-liveblog-initial-post');
             const showEntries = parseInt(this.container.dataset.showEntries) || 10;
+            let count = 0;
 
             hiddenPosts.forEach((post, index) => {
-                if (showEntries > index) {
+                if (count < showEntries) {
                     post.classList.remove('elb-hide');
+                    count++;
                 }
             });
 
+            this.isLoading = false;
+
+            if (this.paginationMode === 'infinite' && this.loader) {
+                this.loader.style.display = 'none';
+            }
+
+            // Check if any hidden posts remain
             if (this.list.querySelectorAll('li.elb-hide.elb-liveblog-initial-post').length === 0) {
                 if (this.loadMoreButton) {
                     this.loadMoreButton.textContent = elb.now_more_posts;
-                    setTimeout(() => {
-                        this.loadMoreButton.style.opacity = '0';
-                        this.loadMoreButton.style.transition = 'opacity 1s';
+                    // Fade out logic for button mode
+                    if (this.paginationMode !== 'infinite') {
                         setTimeout(() => {
-                            this.loadMoreButton.style.display = 'none';
-                        }, 1000);
-                    }, 2000);
+                            this.loadMoreButton.style.opacity = '0';
+                            this.loadMoreButton.style.transition = 'opacity 1s';
+                            setTimeout(() => {
+                                this.loadMoreButton.style.display = 'none';
+                            }, 1000);
+                        }, 2000);
+                    } else {
+                        // Infinite scroll: just hide button (should be hidden anyway) and disconnect observer
+                        this.loadMoreButton.style.display = 'none';
+                        if (this.observer && this.sentinel) {
+                            this.observer.unobserve(this.sentinel);
+                        }
+                    }
                 }
             }
 

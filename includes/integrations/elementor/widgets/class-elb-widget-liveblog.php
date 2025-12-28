@@ -52,8 +52,6 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 			)
 		);
 
-		$this->add_control(
-			'update_interval',
 			array(
 				'label'   => esc_html__( 'Update interval (seconds)', 'easy-liveblogs' ),
 				'type'    => \Elementor\Controls_Manager::NUMBER,
@@ -61,6 +59,20 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 				'max'     => 300,
 				'step'    => 5,
 				'default' => 30,
+			)
+		);
+
+		$this->add_control(
+			'pagination_type',
+			array(
+				'label'   => esc_html__( 'Pagination Type', 'easy-liveblogs' ),
+				'type'    => \Elementor\Controls_Manager::SELECT,
+				'options' => array(
+					'default'  => esc_html__( 'Default (Inherit from Settings)', 'easy-liveblogs' ),
+					'button'   => esc_html__( 'Load More Button', 'easy-liveblogs' ),
+					'infinite' => esc_html__( 'Infinite Scroll', 'easy-liveblogs' ),
+				),
+				'default' => 'default',
 			)
 		);
 
@@ -73,6 +85,19 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 				'label_off'    => esc_html__( 'No', 'easy-liveblogs' ),
 				'return_value' => 'yes',
 				'default'      => 'yes',
+			)
+		);
+
+		$this->add_control(
+			'enable_widget_content_protection',
+			array(
+				'label'        => esc_html__( 'Content Protection', 'easy-liveblogs' ),
+				'type'         => \Elementor\Controls_Manager::SWITCHER,
+				'label_on'     => esc_html__( 'Yes', 'easy-liveblogs' ),
+				'label_off'    => esc_html__( 'No', 'easy-liveblogs' ),
+				'return_value' => 'yes',
+				'default'      => 'no',
+				'description'  => esc_html__( 'Prevent copying content (disable right-click & text selection) for this specific liveblog.', 'easy-liveblogs' ),
 			)
 		);
 
@@ -881,6 +906,8 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
         $status = elb_get_liveblog_status( $liveblog_id );
         $show_entries = $settings['show_entries'];
         $append_timestamp = $settings['append_timestamp'] === 'yes' ? '1' : '0';
+        $content_protection = ! empty( $settings['enable_widget_content_protection'] ) && $settings['enable_widget_content_protection'] === 'yes' ? '1' : '';
+        $pagination_type = ! empty( $settings['pagination_type'] ) && $settings['pagination_type'] !== 'default' ? $settings['pagination_type'] : '';
 
         wp_enqueue_script( 'elb' );
         wp_enqueue_script( 'wp-embed' );
@@ -911,6 +938,8 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
         ?>
         <div id="elb-liveblog" class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" 
              data-append-timestamp="<?php echo esc_attr( $append_timestamp ); ?>" 
+             data-content-protection="<?php echo esc_attr( $content_protection ); ?>" 
+             data-pagination-type="<?php echo esc_attr( $pagination_type ); ?>" 
              data-status="<?php echo esc_attr( $status ); ?>" 
              data-show-entries="<?php echo esc_attr( $show_entries ); ?>" 
              data-endpoint="<?php echo esc_url( $endpoint ); ?>">

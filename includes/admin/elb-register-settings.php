@@ -138,6 +138,17 @@ function elb_get_registered_settings() {
 				'default_value' => 10,
 			),
 			array(
+				'id'            => 'pagination_type',
+				'name'          => __( 'Pagination Type', ELB_TEXT_DOMAIN ),
+				'desc'          => __( 'Choose how to load older entries.', ELB_TEXT_DOMAIN ),
+				'type'          => 'select',
+				'options'       => array(
+					'button'   => __( 'Load More Button', ELB_TEXT_DOMAIN ),
+					'infinite' => __( 'Infinite Scroll', ELB_TEXT_DOMAIN ),
+				),
+				'default_value' => 'button',
+			),
+			array(
 				'id'            => 'post_types',
 				'name'          => __( 'Post types', ELB_TEXT_DOMAIN ),
 				'desc'          => __( 'Select the post types that need to support liveblogs.', ELB_TEXT_DOMAIN ),
@@ -178,6 +189,12 @@ function elb_get_registered_settings() {
 				'id'   => 'append_timestamp',
 				'name' => __( 'Append timestamp', ELB_TEXT_DOMAIN ),
 				'desc' => __( 'Appends a timestamp to the liveblog feed URL.', ELB_TEXT_DOMAIN ),
+				'type' => 'checkbox',
+			),
+			array(
+				'id'   => 'enable_content_protection',
+				'name' => __( 'Content Protection', ELB_TEXT_DOMAIN ),
+				'desc' => __( 'Prevent users from copying content (disables right-click and text selection on liveblog entries).', ELB_TEXT_DOMAIN ),
 				'type' => 'checkbox',
 			),
 		),
