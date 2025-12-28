@@ -192,19 +192,19 @@ ul.elb-liveblog-list {
 	cursor: zoom-in;
 }
 
-.elb-liveblog ul.elb-liveblog-list::-webkit-scrollbar {
+.elb-liveblog .elb-liveblog-list-container::-webkit-scrollbar {
 	width: 6px;
 }
 
-.elb-liveblog ul.elb-liveblog-list::-webkit-scrollbar-track {
+.elb-liveblog .elb-liveblog-list-container::-webkit-scrollbar-track {
 	background: #f1f1f1;
 }
 
-.elb-liveblog ul.elb-liveblog-list::-webkit-scrollbar-thumb {
+.elb-liveblog .elb-liveblog-list-container::-webkit-scrollbar-thumb {
 	background: #c1c1c1;
 	border-radius: 10px;
 }
 
-.elb-liveblog ul.elb-liveblog-list::-webkit-scrollbar-thumb:hover {
+.elb-liveblog .elb-liveblog-list-container::-webkit-scrollbar-thumb:hover {
 	background: #a8a8a8;
 }

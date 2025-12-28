@@ -352,25 +352,55 @@
             li.dataset.elbPostDatetime = post.timestamp;
             li.dataset.elbPostId = post.id;
 
-            let html = '';
-            html += this.renderTime(post);
+            // Check for Custom Template
+            const template = this.container.querySelector('.elb-custom-template');
 
-            if (this.settings.showAuthor) {
-                html += this.renderAuthor(post);
+            if (template) {
+                let html = template.innerHTML;
+
+                // Replace Placeholders
+                const timeHtml = this.renderTime(post);
+                // Extract just the time text for simpler replacement if needed, 
+                // but usually user wants the full formatted time block or they build their own.
+                // For {{time}}, we'll pass the full HTML we generated for consistency, 
+                // or we could pass raw values. Let's stick to the prompt requirements.
+
+                // We need to be careful about what renderTime returns (it returns a <p> string).
+                // If the user puts {{time}} inside a <p>, it might be nested <p><p>...</p></p>.
+                // But for now let's follow the prompt mapping: {{time}} -> this.renderTime(post)
+
+                html = html.replace(/{{title}}/g, post.title);
+                html = html.replace(/{{content}}/g, post.content);
+                html = html.replace(/{{time}}/g, this.renderTime(post));
+                html = html.replace(/{{date}}/g, post.datetime); // Assuming post.datetime is the formatted date string
+                html = html.replace(/{{author}}/g, post.author ? post.author : '');
+                html = html.replace(/{{link}}/g, post.permalink);
+                html = html.replace(/{{id}}/g, post.id);
+
+                li.innerHTML = html;
+            } else {
+                // Default Rendering
+                let html = '';
+                html += this.renderTime(post);
+
+                if (this.settings.showAuthor) {
+                    html += this.renderAuthor(post);
+                }
+
+                html += `<h2 class="elb-liveblog-post-heading">${post.title}</h2>`;
+                html += `<div class="elb-liveblog-post-content">${post.content}</div>`;
+
+                if (this.settings.showSharing) {
+                    html += this.renderSharing(post);
+                }
+
+                if (this.settings.isEditor) {
+                    html += this.renderActions(post);
+                }
+
+                li.innerHTML = html;
             }
 
-            html += `<h2 class="elb-liveblog-post-heading">${post.title}</h2>`;
-            html += `<div class="elb-liveblog-post-content">${post.content}</div>`;
-
-            if (this.settings.showSharing) {
-                html += this.renderSharing(post);
-            }
-
-            if (this.settings.isEditor) {
-                html += this.renderActions(post);
-            }
-
-            li.innerHTML = html;
             this.bindLightbox(li);
             return li;
         }
