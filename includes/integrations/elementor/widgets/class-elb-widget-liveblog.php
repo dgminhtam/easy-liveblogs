@@ -85,7 +85,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 				'type'      => \Elementor\Controls_Manager::TEXT,
 				'default'   => esc_html__( 'Load more', 'easy-liveblogs' ),
 				'condition' => array(
-					'pagination_type!' => 'infinite',
+					'pagination_type' => array( 'button', 'default' ),
 				),
 			)
 		);
@@ -1015,8 +1015,6 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
 
             <div class="elb-liveblog-closed-message" style="display: none;"><?php echo esc_html__( 'The liveblog has ended.', 'easy-liveblogs' ); ?></div>
 
-
-
             <div class="elb-no-liveblog-entries-message" style="display: none;"><?php echo esc_html__( 'No liveblog updates yet.', 'easy-liveblogs' ); ?></div>
 
             <div class="elb-liveblog-list-container">
@@ -1043,7 +1041,7 @@ class ELB_Widget_Liveblog extends \Elementor\Widget_Base {
                 </svg>
             </div>
 
-            <button id="elb-load-more" style="display: none;" class="elb-button button"><?php echo esc_html( $settings['load_more_text'] ); ?></button>
+            <button id="elb-load-more" style="display: none;" class="elb-button button"><?php echo esc_html( ! empty( $settings['load_more_text'] ) ? $settings['load_more_text'] : __( 'Load more', 'easy-liveblogs' ) ); ?></button>
         </div>
         <?php
 

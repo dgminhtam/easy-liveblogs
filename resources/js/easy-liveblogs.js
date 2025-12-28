@@ -10,7 +10,6 @@
             this.newPosts = 0;
             this.timestamp = false;
             this.loader = null;
-            this.showNewButton = null;
             this.loadMoreButton = null;
             this.list = null;
             this.statusMessage = null;
@@ -27,7 +26,6 @@
                 return;
             }
 
-            this.showNewButton = this.container.querySelector('#elb-show-new-posts');
             this.loadMoreButton = this.container.querySelector('#elb-load-more');
             this.loader = this.container.querySelector('.elb-loader');
             this.list = this.container.querySelector('.elb-liveblog-list');
@@ -39,9 +37,7 @@
             this.fetchFeed();
 
             // Event listeners
-            if (this.showNewButton) {
-                this.showNewButton.addEventListener('click', () => this.showNew());
-            }
+
 
             if (this.loadMoreButton) {
                 this.loadMoreButton.addEventListener('click', () => this.loadMore());
@@ -66,7 +62,10 @@
                 // Create a sentinel element for IntersectionObserver
                 this.sentinel = document.createElement('div');
                 this.sentinel.className = 'elb-infinite-scroll-sentinel';
-                this.container.appendChild(this.sentinel);
+
+                // Append sentinel to correct scrolling container
+                const scrollParent = this.container.querySelector('.elb-liveblog-list-container') || this.container;
+                scrollParent.appendChild(this.sentinel);
 
                 this.setupInfiniteScroll();
             }
@@ -158,7 +157,7 @@
                     // Remove old new posts tracking
                     const oldNewPosts = this.list.querySelectorAll('.elb-new');
                     oldNewPosts.forEach(post => post.remove());
-                    this.resetUpdateCounter();
+
 
                     feed.updates.forEach((post, index) => {
                         // Track the latest timestamp from valid posts
@@ -226,11 +225,9 @@
                             return;
                         }
 
-                        // New post - display immediately
                         if (!this.firstLoad && !currentPost) {
                             const postElement = this.renderPost(post);
                             postElement.classList.add('elb-new');
-                            this.newPosts++;
                             newPosts.push(postElement);
                         }
                     });
@@ -257,13 +254,7 @@
                         }
                     }
 
-                    // Auto-show new posts
-                    if (this.newPosts > 0) {
-                        this.showNew();
-                        if (typeof elb_after_update_liveblog_callback === 'function') {
-                            elb_after_update_liveblog_callback();
-                        }
-                    }
+
 
                     // Update human timestamps
                     if (elb.datetime_format === 'human') {
@@ -485,79 +476,64 @@
             return url;
         }
 
-        showNew() {
-            const newPosts = this.list.querySelectorAll('li.elb-new:not([style*="display: none"])');
-            newPosts.forEach(post => {
-                post.classList.remove('elb-new');
-            });
 
-            if (this.showNewButton) {
-                this.showNewButton.style.display = 'none';
-            }
-            this.resetUpdateCounter();
-        }
-
-        resetUpdateCounter() {
-            this.newPosts = 0;
-            document.title = this.documentTitle;
-        }
 
         loadMore() {
             if (this.isLoading) return;
             this.isLoading = true;
 
-            // Show loader if infinite scroll
-            if (this.paginationMode === 'infinite' && this.loader) {
+            // Show loader immediately
+            if (this.loader) {
                 this.loader.style.display = 'block';
             }
 
-            // Simulate network delay or just process immediate DOM changes
-            // Since this plugin currently hides posts with CSS, the "load" is technically instant.
-            // But we keep the structure for potential future AJAX loading.
+            // Simulate network delay to show loader
+            setTimeout(() => {
+                const hiddenPosts = this.list.querySelectorAll('li.elb-hide.elb-liveblog-initial-post');
+                const showEntries = parseInt(this.container.dataset.showEntries) || 10;
+                let count = 0;
 
-            const hiddenPosts = this.list.querySelectorAll('li.elb-hide.elb-liveblog-initial-post');
-            const showEntries = parseInt(this.container.dataset.showEntries) || 10;
-            let count = 0;
+                hiddenPosts.forEach((post, index) => {
+                    if (count < showEntries) {
+                        post.classList.remove('elb-hide');
+                        count++;
+                    }
+                });
 
-            hiddenPosts.forEach((post, index) => {
-                if (count < showEntries) {
-                    post.classList.remove('elb-hide');
-                    count++;
+                this.isLoading = false;
+
+                // Hide loader
+                if (this.loader) {
+                    this.loader.style.display = 'none';
                 }
-            });
 
-            this.isLoading = false;
-
-            if (this.paginationMode === 'infinite' && this.loader) {
-                this.loader.style.display = 'none';
-            }
-
-            // Check if any hidden posts remain
-            if (this.list.querySelectorAll('li.elb-hide.elb-liveblog-initial-post').length === 0) {
-                if (this.loadMoreButton) {
-                    this.loadMoreButton.textContent = elb.now_more_posts;
-                    // Fade out logic for button mode
-                    if (this.paginationMode !== 'infinite') {
-                        setTimeout(() => {
-                            this.loadMoreButton.style.opacity = '0';
-                            this.loadMoreButton.style.transition = 'opacity 1s';
+                // Check if any hidden posts remain
+                if (this.list.querySelectorAll('li.elb-hide.elb-liveblog-initial-post').length === 0) {
+                    if (this.loadMoreButton) {
+                        this.loadMoreButton.textContent = elb.now_more_posts;
+                        // Fade out logic for button mode
+                        if (this.paginationMode !== 'infinite') {
                             setTimeout(() => {
-                                this.loadMoreButton.style.display = 'none';
-                            }, 1000);
-                        }, 2000);
-                    } else {
-                        // Infinite scroll: just hide button (should be hidden anyway) and disconnect observer
-                        this.loadMoreButton.style.display = 'none';
-                        if (this.observer && this.sentinel) {
-                            this.observer.unobserve(this.sentinel);
+                                this.loadMoreButton.style.opacity = '0';
+                                this.loadMoreButton.style.transition = 'opacity 1s';
+                                setTimeout(() => {
+                                    this.loadMoreButton.style.display = 'none';
+                                }, 1000);
+                            }, 2000);
+                        } else {
+                            // Infinite scroll: just hide button (should be hidden anyway) and disconnect observer
+                            this.loadMoreButton.style.display = 'none';
+                            if (this.observer && this.sentinel) {
+                                this.observer.unobserve(this.sentinel);
+                            }
                         }
                     }
                 }
-            }
 
-            if (typeof elb_after_load_more_callback === 'function') {
-                elb_after_load_more_callback();
-            }
+                if (typeof elb_after_load_more_callback === 'function') {
+                    elb_after_load_more_callback();
+                }
+            }, 600); // 600ms Delay
         }
 
         updateTimestamps() {
